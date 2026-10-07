@@ -61,6 +61,10 @@ const DATA={"names": ["Nguyễn Hải Anh", "Nguyễn Trần Bảo Anh", "Trần
 const CFGKEY="nguvan10_firebase_cfg_v2";
 const $=id=>document.getElementById(id);
 let cfg=JSON.parse(localStorage.getItem(CFGKEY)||"null");
+const urlParams=new URLSearchParams(location.search);
+if(!cfg && urlParams.get("db")){
+  cfg={dbUrl:(urlParams.get("db")||"").trim().replace(/\/+$/,"")};
+}
 let room=null, role="teacher", poller=null, localState=null, timerHandle=null, studentSession=null;
 
 function rand(max){const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%max}
@@ -73,7 +77,7 @@ async function put(path,data){let r=await fetch(dbPath(path),{method:"PUT",heade
 async function patch(path,data){let r=await fetch(dbPath(path),{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});if(!r.ok)throw Error("Firebase PATCH "+r.status);return r.json()}
 async function del(path){let r=await fetch(dbPath(path),{method:"DELETE"});if(!r.ok)throw Error("Firebase DELETE "+r.status)}
 function showApp(){ $("setup").style.display="none";$("appMain").style.display="block"; }
-function qrUrl(){let base=location.href.split("#")[0];return base+"#student/"+room}
+function qrUrl(){let base=location.href.split("#")[0];return base+"?db="+encodeURIComponent(cfg.dbUrl)+"#student/"+room}
 function renderQr(){let u=encodeURIComponent(qrUrl());$("qr").src="https://api.qrserver.com/v1/create-qr-code/?size=210x210&data="+u;$("qr").style.display="block"}
 function setRoomHash(){history.replaceState(null,"","#student/"+room)}
 function parseHash(){let m=location.hash.match(/^#student\/([A-Z0-9]+)$/);return m?m[1]:null}
