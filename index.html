@@ -16,7 +16,16 @@ input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--lin
 .teacherQ .qtext{font-size:clamp(20px,2.3vw,29px);line-height:1.4;font-weight:850}
 .teacherQ .answerBox{margin-top:14px;padding:14px;border-radius:14px;background:#ffffff10;border:1px solid var(--line);font-size:clamp(18px,2vw,24px);font-weight:800}
 .teacherQ .answerBox.wait{font-weight:650;color:var(--muted)}
-.teacherQ .correctKey{margin-top:8px;font-size:16px;color:var(--muted);font-weight:650}
+.teacherQ .correctKey{margin-top:8px;font-size:16px;color:var(--muted);font-weight:650} .teacherQ .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.teacherQ .choice{padding:12px;border:1px solid var(--line);border-radius:12px;background:#ffffff08;font-size:17px;line-height:1.35}
+.teacherQ .choice.selected{background:#ffd166;color:#17213b;border-color:#ffd166;font-weight:900}
+.teacherQ .choice.correct{outline:2px solid var(--good)}
+.teacherQ .choice.selected.correct{background:#37d07f;color:#062014}
+.teacherQ .choice.selected.wrong{background:#ff657d;color:#fff}
+.teacherQ .resultBadge{display:inline-block;margin-top:12px;padding:8px 14px;border-radius:999px;font-weight:900}
+.teacherQ .resultBadge.good{background:#37d07f;color:#062014}
+.teacherQ .resultBadge.bad{background:#ff657d;color:#fff}
+@media(max-width:700px){.teacherQ .choices{grid-template-columns:1fr}}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:11px;max-width:950px;width:100%;margin:18px auto}.opt{text-align:left}.letter{display:inline-flex;width:34px;height:34px;border-radius:9px;align-items:center;justify-content:center;background:#ffffff14;margin-right:8px}.controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:15px}.stat{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat>div{background:#ffffff09;border-radius:15px;padding:12px}.stat strong{display:block;font-size:27px}.small{font-size:13px;color:var(--muted)}.list{max-height:420px;overflow:auto;margin-top:10px}.item{padding:10px 2px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}.ok{color:var(--good);font-weight:900}.no{color:var(--bad);font-weight:900}.waiting{color:var(--muted)}.room{font-size:42px;font-weight:950;letter-spacing:7px;color:var(--gold);text-align:center}.qr{width:210px;height:210px;display:block;margin:12px auto;background:white;padding:7px;border-radius:12px}.setup{max-width:700px;margin:20px auto}.hint{background:#ffffff08;border:1px solid var(--line);padding:13px;border-radius:14px;color:var(--muted);line-height:1.5}
 .overlay{position:fixed;inset:0;background:#020712e8;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal{width:min(980px,100%);background:#0d2449;border:1px solid var(--line);border-radius:25px;padding:25px;text-align:center}.modal.show{display:block}.studentName{font-size:clamp(35px,6vw,65px);color:var(--gold);font-weight:950}.result{font-size:30px;font-weight:950;margin:14px}.success{color:var(--good)}.error{color:var(--bad)}
 @media(max-width:850px){.grid{grid-template-columns:1fr}.opts{grid-template-columns:1fr}.top{flex-direction:column;align-items:flex-start}.hero{min-height:500px}}
@@ -48,8 +57,10 @@ input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--lin
 <div id="teacherQuestionPanel" class="teacherQ" style="display:none">
   <div class="qtitle">❓ CÂU HỎI</div>
   <div id="teacherQuestion" class="qtext"></div>
+  <div id="teacherChoices" class="choices"></div>
   <div id="teacherAnswer" class="answerBox wait">📱 Chưa có câu trả lời</div>
   <div id="teacherCorrectKey" class="correctKey"></div>
+  <div id="teacherVerdict"></div>
 </div>
 
 <div class="controls"><button class="primary" id="callBtn">🎲 Gọi học sinh</button><button class="good" id="commitCorrectBtn" disabled>✅ Chốt ĐÚNG</button><button class="bad" id="commitWrongBtn" disabled>❌ Chốt SAI</button><button id="undoBtn" disabled>↩ Hoàn tác</button><button id="resetBtn">🔄 Chơi lại</button><button id="newRoomBtn">🏠 Phòng mới</button><button id="cfgBtn">⚙️ Cấu hình</button></div>
@@ -108,6 +119,15 @@ function renderPlayers(players){
  let arr=Object.values(players||{}).sort((a,b)=>(a.name||"").localeCompare(b.name||""));
  $("onlineList").innerHTML=arr.length?arr.map(p=>`<div class="item"><span>${esc(p.name)}</span><span class="small">${p.lastSeen>Date.now()-15000?"🟢":"⚪"}</span></div>`).join(""):"<div class='small'>Chưa có học sinh tham gia.</div>";
 }
+function renderTeacherChoices(q,a){
+ const box=$("teacherChoices");
+ box.innerHTML=q.opts.map((o,i)=>{
+   let cls="choice";
+   if(Number.isInteger(a.answer)&&a.answer===i) cls+=" selected "+(i===q.ans?"correct":"wrong");
+   if(i===q.ans) cls+=" correct";
+   return `<div class="${cls}"><b>${"ABCD"[i]}.</b> ${esc(o)}</div>`;
+ }).join("");
+}
 function renderTeacherState(s){
  if(!s)return;
  $("qCount").textContent=(s.history||[]).length+"/"+DATA.questions.length;
@@ -120,6 +140,7 @@ function renderTeacherState(s){
  $("commitWrongBtn").disabled=!active || !active.answered;
 
  const panel=$("teacherQuestionPanel");
+ $("teacherVerdict").innerHTML="";
  if(s.qIndex>=DATA.questions.length){
    $("tLabel").textContent="🎉 ĐÃ HOÀN THÀNH";
    $("tName").textContent="ĐÃ HỎI HẾT";
@@ -129,17 +150,25 @@ function renderTeacherState(s){
    const q=DATA.questions[s.qIndex];
    $("tLabel").textContent=`CÂU ${active.qId} • ${active.level}`;
    $("tName").textContent=active.name;
-   $("tStatus").textContent=active.answered?"Học sinh đã gửi đáp án.":"Học sinh đang trả lời trên điện thoại.";
+   $("tStatus").textContent=active.answered
+      ?`Học sinh đã gửi đáp án (lần ${active.attempts||1}).`
+      :"Học sinh đang trả lời trên điện thoại.";
    panel.style.display="block";
    $("teacherQuestion").textContent=q.q;
+   renderTeacherChoices(q,active);
    if(active.answered && Number.isInteger(active.answer) && q.opts[active.answer]!==undefined){
      const letter="ABCD"[active.answer];
      $("teacherAnswer").className="answerBox";
      $("teacherAnswer").innerHTML=`📱 <b>Học sinh chọn ${letter}:</b> ${esc(q.opts[active.answer])}`;
      $("teacherCorrectKey").innerHTML=`Đáp án đúng: <b>${"ABCD"[q.ans]}</b> — ${esc(q.opts[q.ans])}`;
+     if(active.lastResult==="correct"){
+       $("teacherVerdict").innerHTML='<span class="resultBadge good">✅ ĐÚNG — Có thể chốt kết quả</span>';
+     } else if(active.lastResult==="wrong-retry"){
+       $("teacherVerdict").innerHTML='<span class="resultBadge bad">❌ SAI — Học sinh được chọn lại 1 lần</span>';
+     }
    }else{
      $("teacherAnswer").className="answerBox wait";
-     $("teacherAnswer").textContent="⏳ Học sinh chưa gửi đáp án...";
+     $("teacherAnswer").textContent=active.attempts?`🔁 Học sinh đang trả lời lại (lần ${active.attempts+1}).`:"⏳ Học sinh chưa gửi đáp án...";
      $("teacherCorrectKey").textContent="";
    }
  } else {
@@ -149,45 +178,98 @@ function renderTeacherState(s){
    panel.style.display="none";
  }
  $("history").innerHTML=(s.history||[]).length
-   ?(s.history||[]).map((x,i)=>`<div class="item"><span>${i+1}. ${esc(x.name)}<br><span class="small">Câu ${x.qId} • Chọn ${"ABCD"[x.answer]||"—"}</span></span><span class="${x.correct?"ok":"no"}">${x.correct?"ĐÚNG":"SAI"}</span></div>`).join("")
+   ?(s.history||[]).map((x,i)=>`<div class="item"><span>${i+1}. ${esc(x.name)}<br><span class="small">Câu ${x.qId} • Chọn ${"ABCD"[x.answer]||"—"} • ${x.attempts||1} lần</span></span><span class="${x.correct?"ok":"no"}">${x.correct?"ĐÚNG":"SAI"}</span></div>`).join("")
    :"<div class='small'>Chưa có lượt nào.</div>";
 }
 function renderStudent(s){
  if(!studentSession)return;
- $("sRoom").textContent=room;$("sHello").textContent="Xin chào, "+studentSession.name+"!";
- if(!s||!s.active){$("sStatus").textContent="⏳ Đang chờ thầy/cô gọi...";$("sQuestion").innerHTML="";$("sResult").innerHTML="";return}
- if(s.active.name!==studentSession.name){$("sStatus").textContent="Thầy/cô đang gọi một bạn khác. Em chờ nhé!";$("sQuestion").innerHTML="";$("sResult").innerHTML="";return}
- if(s.active.answered){$("sStatus").textContent="Đã gửi đáp án. Chờ thầy/cô chốt kết quả.";return}
+ $("sRoom").textContent=room;
+ $("sHello").textContent="Xin chào, "+studentSession.name+"!";
+ if(!s||!s.active){
+   if(s && s.lastReveal && s.lastReveal.name===studentSession.name){
+     $("sStatus").textContent="❌ Chưa đúng sau 2 lần.";
+     $("sQuestion").innerHTML="";
+     $("sResult").innerHTML=`<div class="result">Đáp án đúng: <b>${"ABCD"[s.lastReveal.correctAnswer]}</b> — ${esc(s.lastReveal.correctText)}</div>`;
+   }else{
+     $("sStatus").textContent="⏳ Đang chờ thầy/cô gọi...";
+     $("sQuestion").innerHTML="";
+     $("sResult").innerHTML="";
+   }
+   return;
+ }
+ if(s.active.name!==studentSession.name){
+   $("sStatus").textContent="Thầy/cô đang gọi một bạn khác. Em chờ nhé!";
+   $("sQuestion").innerHTML="";
+   $("sResult").innerHTML="";
+   return;
+ }
  const q=DATA.questions[s.qIndex];
- $("sStatus").textContent="Em hãy chọn A, B, C hoặc D. Khi trả lời xong, em hãy gửi đáp án.";
+ if(s.active.answered){
+   $("sStatus").textContent=`📨 Em đã chọn ${"ABCD"[s.active.answer]}. Chờ thầy/cô chốt kết quả.`;
+   $("sQuestion").innerHTML=`<div class="question">${esc(q.q)}</div><div class="opts">${q.opts.map((o,i)=>`<button class="opt ${i===s.active.answer?"selected":""}" disabled><span class="letter">${"ABCD"[i]}</span>${esc(o)}</button>`).join("")}</div>`;
+   if(s.active.lastResult==="correct"){
+     $("sResult").innerHTML='<div class="result">👏 Chính xác! Em đã trả lời đúng.</div>';
+   }else if(s.active.lastResult==="wrong-retry"){
+     $("sResult").innerHTML='<div class="result" style="border-color:#ff657d">❌ Chưa đúng. Em được chọn lại 1 lần.</div>';
+   }else{
+     $("sResult").innerHTML='<div class="result">📨 Đã gửi đáp án. Chờ thầy/cô chốt kết quả.</div>';
+   }
+   return;
+ }
+ $("sStatus").textContent=s.active.attempts?`🔁 Lần trả lời thứ ${s.active.attempts+1}: em hãy chọn lại A, B, C hoặc D.`:"Em hãy chọn A, B, C hoặc D.";
  $("sQuestion").innerHTML=`<div class="question">${esc(q.q)}</div><div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="submitAnswer(${i})"><span class="letter">${"ABCD"[i]}</span>${esc(o)}</button>`).join("")}</div>`;
-}
-async function callStudent(){
- let s=await get("state");if(s.active||s.qIndex>=DATA.questions.length)return;
- let players=await get("players")||{};
- let used=new Set(s.usedNames||[]);
- let candidates=Object.values(players).filter(p=>!used.has(p.name));
- // Fallback: students may not have joined; still select from class roster.
- let name=candidates.length?candidates[rand(candidates.length)].name:DATA.names.filter(n=>!used.has(n))[rand(DATA.names.filter(n=>!used.has(n)).length)];
- if(!name){alert("Đã gọi hết học sinh.");return}
- let q=DATA.questions[s.qIndex];
- s.active={name,qId:q.id,level:q.level,answered:false,answer:null,answerAt:0};
- s.version=(s.version||0)+1;
- await put("state",s);beep();refreshRoom();
+ if(s.active.lastResult==="wrong-retry") $("sResult").innerHTML='<div class="result" style="border-color:#ff657d">❌ Sai. Hãy thử lại một lần nữa!</div>';
 }
 async function submitAnswer(i){
  if(!studentSession)return;
- let s=await get("state");if(!s.active||s.active.name!==studentSession.name||s.active.answered)return;
- 
- s.active.answered=true;s.active.answer=i;s.active.answerAt=Date.now();s.version=(s.version||0)+1;
+ let s=await get("state");
+ if(!s.active||s.active.name!==studentSession.name||s.active.answered)return;
+ s.active.answered=true;
+ s.active.answer=i;
+ s.active.answerAt=Date.now();
+ s.active.attempts=(s.active.attempts||0)+1;
+ s.active.lastResult=null;
+ s.version=(s.version||0)+1;
  await put("state",s);
- $("sResult").innerHTML="<div class='result'>📨 Đã gửi đáp án!</div>";renderStudent(s);
+ renderStudent(s);
+}
+function applause(){
+ try{
+   const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+   const c=new C(),now=c.currentTime;
+   for(let k=0;k<8;k++){
+     const o=c.createOscillator(),g=c.createGain();
+     o.type="triangle";o.frequency.value=700+Math.random()*900;
+     g.gain.setValueAtTime(0.0001,now+k*.06);
+     g.gain.exponentialRampToValueAtTime(.12,now+k*.06+.01);
+     g.gain.exponentialRampToValueAtTime(.0001,now+k*.06+.08);
+     o.connect(g);g.connect(c.destination);o.start(now+k*.06);o.stop(now+k*.06+.09);
+   }
+   setTimeout(()=>c.close(),800);
+ }catch(e){}
 }
 async function commitResult(correct){
  let s=await get("state");if(!s.active||!s.active.answered)return;
  const q=DATA.questions[s.qIndex],a=s.active;
- s.history.push({name:a.name,qId:q.id,correct:!!correct,answer:a.answer});
+ if(correct){
+   a.lastResult="correct";
+   s.history.push({name:a.name,qId:q.id,correct:true,answer:a.answer,attempts:a.attempts||1});
+   s.usedNames.push(a.name);s.qIndex++;s.active=null;s.version=(s.version||0)+1;
+   await put("state",s);applause();refreshRoom();return;
+ }
+ if((a.attempts||1)===1){
+   a.answered=false;
+   a.lastResult="wrong-retry";
+   a.answer=null;
+   a.answerAt=0;
+   s.version=(s.version||0)+1;
+   await put("state",s);refreshRoom();return;
+ }
+ // Sai lần 2: chốt sai và hiện đáp án đúng trên cả hai màn hình.
+ a.lastResult="wrong-final";
+ s.history.push({name:a.name,qId:q.id,correct:false,answer:a.answer,attempts:a.attempts||2});
  s.usedNames.push(a.name);s.qIndex++;s.active=null;s.version=(s.version||0)+1;
+ s.lastReveal={name:a.name,qId:q.id,correctAnswer:q.ans,correctText:q.opts[q.ans]};
  await put("state",s);refreshRoom();
 }
 async function undo(){
@@ -196,7 +278,7 @@ async function undo(){
 }
 async function resetRoom(){
  if(!confirm("Xóa toàn bộ lượt chơi của phòng này?"))return;
- let s={qIndex:0,usedNames:[],history:[],active:null,version:(localState?.version||0)+1};await put("state",s);refreshRoom();
+ let s={qIndex:0,usedNames:[],history:[],active:null,lastReveal:null,version:(localState?.version||0)+1};await put("state",s);refreshRoom();
 }
 async function newRoom(){await createRoom()}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
