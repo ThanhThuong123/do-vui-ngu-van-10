@@ -75,7 +75,7 @@ async function put(path,data){let r=await fetch(dbPath(path),{method:"PUT",heade
 async function patch(path,data){let r=await fetch(dbPath(path),{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});if(!r.ok)throw Error("Firebase PATCH "+r.status);return r.json()}
 async function del(path){let r=await fetch(dbPath(path),{method:"DELETE"});if(!r.ok)throw Error("Firebase DELETE "+r.status)}
 function showApp(){ $("setup").style.display="none";$("appMain").style.display="block"; }
-function qrUrl(){let base=location.href.split("#")[0];return base+"?db="+encodeURIComponent(cfg.dbUrl)+"&room="+encodeURIComponent(room)}
+function qrUrl(){let base=location.href.split("#")[0].split("?")[0];return base+"?room="+encodeURIComponent(room)}
 function renderQr(){let u=encodeURIComponent(qrUrl());$("qr").src="https://api.qrserver.com/v1/create-qr-code/?size=210x210&data="+u;$("qr").style.display="block"}
 function setRoomHash(){history.replaceState(null,"","#student/"+room)}
 function parseHash(){let q=urlParams.get("room");if(q&&/^[A-Z0-9]+$/.test(q))return q;let m=location.hash.match(/^#student\/([A-Z0-9]+)$/);return m?m[1]:null}
@@ -181,8 +181,21 @@ function startPoll(){clearInterval(poller);refreshRoom();poller=setInterval(asyn
 
 (function init(){
  let hashRoom=parseHash();
- if(cfg){$("dbUrl").value=cfg.dbUrl;showApp();role=hashRoom?"student":"teacher";if(hashRoom){room=hashRoom;$("sRoom").textContent=room;switchView("student")}else{createRoom().then(startPoll)}}
- else if(hashRoom){alert("Máy giáo viên chưa tạo phòng. Hãy mở ứng dụng trên máy giáo viên trước.");}
+ if(hashRoom){
+   if(!cfg) cfg={dbUrl:DEFAULT_DB_URL};
+   $("dbUrl").value=cfg.dbUrl;
+   showApp();
+   role="student";
+   room=hashRoom;
+   $("sRoom").textContent=room;
+   switchView("student");
+   startPoll();
+ } else if(cfg){
+   $("dbUrl").value=cfg.dbUrl;
+   showApp();
+   role="teacher";
+   createRoom().then(startPoll).catch(e=>alert("Không kết nối được Firebase. Kiểm tra Database URL và Rules."));
+ }
 })();
 </script>
 </body>
