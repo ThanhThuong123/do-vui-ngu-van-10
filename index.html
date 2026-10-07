@@ -10,7 +10,14 @@
 .app{max-width:1280px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:14px;align-items:center}.brand h1{margin:0;font-size:clamp(27px,4vw,45px)}.brand p{margin:4px 0;color:var(--muted)}.badge{padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:#ffffff0b}
 .tabs{display:flex;gap:8px;margin:16px 0}.tab{flex:1}.tab.active{background:var(--gold);color:#17213b}.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:1.45fr .8fr;gap:16px}.card{background:linear-gradient(145deg,#0e2850,#091b38);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 20px 60px #0005}
 button,input,select{font:inherit}button{border:1px solid var(--line);background:#ffffff0b;color:#fff;border-radius:13px;padding:12px 16px;font-weight:800;cursor:pointer}button.primary{background:var(--gold);color:#16223b}button.blue{background:var(--blue);color:#06223a}button.good{background:var(--good);color:#062416}button.bad{background:var(--bad);color:#3a0610}button:disabled{opacity:.4;cursor:not-allowed}
-input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#0003;color:#fff;outline:none}.row{display:flex;gap:9px;align-items:center}.row>*{flex:1}.hero{text-align:center;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center}.eyebrow{text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-size:13px}.big{font-size:clamp(44px,8vw,88px);font-weight:950;color:var(--gold);line-height:1.05;margin:12px 0}.question{font-size:clamp(21px,2.8vw,32px);line-height:1.35;font-weight:800;max-width:950px;margin:10px auto}.opts{display:grid;grid-template-columns:1fr 1fr;gap:11px;max-width:950px;width:100%;margin:18px auto}.opt{text-align:left}.letter{display:inline-flex;width:34px;height:34px;border-radius:9px;align-items:center;justify-content:center;background:#ffffff14;margin-right:8px}.controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:15px}.stat{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat>div{background:#ffffff09;border-radius:15px;padding:12px}.stat strong{display:block;font-size:27px}.small{font-size:13px;color:var(--muted)}.list{max-height:420px;overflow:auto;margin-top:10px}.item{padding:10px 2px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}.ok{color:var(--good);font-weight:900}.no{color:var(--bad);font-weight:900}.waiting{color:var(--muted)}.room{font-size:42px;font-weight:950;letter-spacing:7px;color:var(--gold);text-align:center}.qr{width:210px;height:210px;display:block;margin:12px auto;background:white;padding:7px;border-radius:12px}.setup{max-width:700px;margin:20px auto}.hint{background:#ffffff08;border:1px solid var(--line);padding:13px;border-radius:14px;color:var(--muted);line-height:1.5}
+input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#0003;color:#fff;outline:none}.row{display:flex;gap:9px;align-items:center}.row>*{flex:1}.hero{text-align:center;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center}.eyebrow{text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-size:13px}.big{font-size:clamp(44px,8vw,88px);font-weight:950;color:var(--gold);line-height:1.05;margin:12px 0}.question{font-size:clamp(21px,2.8vw,32px);line-height:1.35;font-weight:800;max-width:950px;margin:10px auto}
+.teacherQ{width:min(950px,100%);margin:18px auto 0;text-align:left;background:#ffffff0d;border:1px solid var(--line);border-radius:18px;padding:18px}
+.teacherQ .qtitle{font-size:13px;letter-spacing:1px;color:var(--muted);font-weight:800;margin-bottom:7px}
+.teacherQ .qtext{font-size:clamp(20px,2.3vw,29px);line-height:1.4;font-weight:850}
+.teacherQ .answerBox{margin-top:14px;padding:14px;border-radius:14px;background:#ffffff10;border:1px solid var(--line);font-size:clamp(18px,2vw,24px);font-weight:800}
+.teacherQ .answerBox.wait{font-weight:650;color:var(--muted)}
+.teacherQ .correctKey{margin-top:8px;font-size:16px;color:var(--muted);font-weight:650}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:11px;max-width:950px;width:100%;margin:18px auto}.opt{text-align:left}.letter{display:inline-flex;width:34px;height:34px;border-radius:9px;align-items:center;justify-content:center;background:#ffffff14;margin-right:8px}.controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:15px}.stat{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat>div{background:#ffffff09;border-radius:15px;padding:12px}.stat strong{display:block;font-size:27px}.small{font-size:13px;color:var(--muted)}.list{max-height:420px;overflow:auto;margin-top:10px}.item{padding:10px 2px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}.ok{color:var(--good);font-weight:900}.no{color:var(--bad);font-weight:900}.waiting{color:var(--muted)}.room{font-size:42px;font-weight:950;letter-spacing:7px;color:var(--gold);text-align:center}.qr{width:210px;height:210px;display:block;margin:12px auto;background:white;padding:7px;border-radius:12px}.setup{max-width:700px;margin:20px auto}.hint{background:#ffffff08;border:1px solid var(--line);padding:13px;border-radius:14px;color:var(--muted);line-height:1.5}
 .overlay{position:fixed;inset:0;background:#020712e8;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal{width:min(980px,100%);background:#0d2449;border:1px solid var(--line);border-radius:25px;padding:25px;text-align:center}.modal.show{display:block}.studentName{font-size:clamp(35px,6vw,65px);color:var(--gold);font-weight:950}.result{font-size:30px;font-weight:950;margin:14px}.success{color:var(--good)}.error{color:var(--bad)}
 @media(max-width:850px){.grid{grid-template-columns:1fr}.opts{grid-template-columns:1fr}.top{flex-direction:column;align-items:flex-start}.hero{min-height:500px}}
 </style>
@@ -38,6 +45,12 @@ input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--lin
 <img id="qr" class="qr" alt="QR vào phòng" style="display:none">
 <div class="big" id="tName">SẴN SÀNG</div>
 <div class="small" id="tStatus">Học sinh dùng điện thoại mở liên kết/QR, nhập tên và chờ được gọi.</div>
+<div id="teacherQuestionPanel" class="teacherQ" style="display:none">
+  <div class="qtitle">❓ CÂU HỎI</div>
+  <div id="teacherQuestion" class="qtext"></div>
+  <div id="teacherAnswer" class="answerBox wait">📱 Chưa có câu trả lời</div>
+  <div id="teacherCorrectKey" class="correctKey"></div>
+</div>
 
 <div class="controls"><button class="primary" id="callBtn">🎲 Gọi học sinh</button><button class="good" id="commitCorrectBtn" disabled>✅ Chốt ĐÚNG</button><button class="bad" id="commitWrongBtn" disabled>❌ Chốt SAI</button><button id="undoBtn" disabled>↩ Hoàn tác</button><button id="resetBtn">🔄 Chơi lại</button><button id="newRoomBtn">🏠 Phòng mới</button><button id="cfgBtn">⚙️ Cấu hình</button></div>
 </div>
@@ -102,12 +115,42 @@ function renderTeacherState(s){
  $("no").textContent=(s.history||[]).filter(x=>x.correct===false).length;
  $("undoBtn").disabled=!(s.history||[]).length;
  let active=s.active;
- $("callBtn").disabled=!!active || (s.qIndex>=DATA.questions.length);$("commitCorrectBtn").disabled=!active || !active.answered;$("commitWrongBtn").disabled=!active || !active.answered;
- if(s.qIndex>=DATA.questions.length){$("tLabel").textContent="🎉 ĐÃ HOÀN THÀNH";$("tName").textContent="ĐÃ HỎI HẾT";$("tStatus").textContent="Thầy/cô có thể tạo phòng mới để chơi lại."}
- else if(active){$("tLabel").textContent=`CÂU ${active.qId} • ${active.level}`;$("tName").textContent=active.name;$("tStatus").textContent=active.answered?"Học sinh đã gửi đáp án.":"Học sinh đang trả lời trên điện thoại."}
- else{$("tLabel").textContent="SẴN SÀNG";$("tName").textContent="GỌI HỌC SINH";$("tStatus").textContent="Nhấn “Gọi học sinh” để chọn ngẫu nhiên."}
- $("history").innerHTML=(s.history||[]).length?(s.history||[]).map((x,i)=>`<div class="item"><span>${i+1}. ${esc(x.name)}<br><span class="small">Câu ${x.qId}</span></span><span class="${x.correct?"ok":"no"}">${x.correct?"ĐÚNG":"SAI"}</span></div>`).join(""):"<div class='small'>Chưa có lượt nào.</div>";
- 
+ $("callBtn").disabled=!!active || (s.qIndex>=DATA.questions.length);
+ $("commitCorrectBtn").disabled=!active || !active.answered;
+ $("commitWrongBtn").disabled=!active || !active.answered;
+
+ const panel=$("teacherQuestionPanel");
+ if(s.qIndex>=DATA.questions.length){
+   $("tLabel").textContent="🎉 ĐÃ HOÀN THÀNH";
+   $("tName").textContent="ĐÃ HỎI HẾT";
+   $("tStatus").textContent="Thầy/cô có thể tạo phòng mới để chơi lại.";
+   panel.style.display="none";
+ } else if(active){
+   const q=DATA.questions[s.qIndex];
+   $("tLabel").textContent=`CÂU ${active.qId} • ${active.level}`;
+   $("tName").textContent=active.name;
+   $("tStatus").textContent=active.answered?"Học sinh đã gửi đáp án.":"Học sinh đang trả lời trên điện thoại.";
+   panel.style.display="block";
+   $("teacherQuestion").textContent=q.q;
+   if(active.answered && Number.isInteger(active.answer) && q.opts[active.answer]!==undefined){
+     const letter="ABCD"[active.answer];
+     $("teacherAnswer").className="answerBox";
+     $("teacherAnswer").innerHTML=`📱 <b>Học sinh chọn ${letter}:</b> ${esc(q.opts[active.answer])}`;
+     $("teacherCorrectKey").innerHTML=`Đáp án đúng: <b>${"ABCD"[q.ans]}</b> — ${esc(q.opts[q.ans])}`;
+   }else{
+     $("teacherAnswer").className="answerBox wait";
+     $("teacherAnswer").textContent="⏳ Học sinh chưa gửi đáp án...";
+     $("teacherCorrectKey").textContent="";
+   }
+ } else {
+   $("tLabel").textContent="SẴN SÀNG";
+   $("tName").textContent="GỌI HỌC SINH";
+   $("tStatus").textContent="Nhấn “Gọi học sinh” để chọn ngẫu nhiên.";
+   panel.style.display="none";
+ }
+ $("history").innerHTML=(s.history||[]).length
+   ?(s.history||[]).map((x,i)=>`<div class="item"><span>${i+1}. ${esc(x.name)}<br><span class="small">Câu ${x.qId} • Chọn ${"ABCD"[x.answer]||"—"}</span></span><span class="${x.correct?"ok":"no"}">${x.correct?"ĐÚNG":"SAI"}</span></div>`).join("")
+   :"<div class='small'>Chưa có lượt nào.</div>";
 }
 function renderStudent(s){
  if(!studentSession)return;
