@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI GỌI TÊN – NGỮ VĂN 10 | Phòng tương tác</title>
+<style>
+:root{--bg:#06142d;--card:#0d2449;--card2:#12305c;--text:#f7fbff;--muted:#b9c9e6;--gold:#ffd166;--blue:#4db7ff;--good:#37d07f;--bad:#ff657d;--line:#ffffff18}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#17457d,#06142d 48%,#020814);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+.app{max-width:1280px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:14px;align-items:center}.brand h1{margin:0;font-size:clamp(27px,4vw,45px)}.brand p{margin:4px 0;color:var(--muted)}.badge{padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:#ffffff0b}
+.tabs{display:flex;gap:8px;margin:16px 0}.tab{flex:1}.tab.active{background:var(--gold);color:#17213b}.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:1.45fr .8fr;gap:16px}.card{background:linear-gradient(145deg,#0e2850,#091b38);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 20px 60px #0005}
+button,input,select{font:inherit}button{border:1px solid var(--line);background:#ffffff0b;color:#fff;border-radius:13px;padding:12px 16px;font-weight:800;cursor:pointer}button.primary{background:var(--gold);color:#16223b}button.blue{background:var(--blue);color:#06223a}button.good{background:var(--good);color:#062416}button.bad{background:var(--bad);color:#3a0610}button:disabled{opacity:.4;cursor:not-allowed}
+input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#0003;color:#fff;outline:none}.row{display:flex;gap:9px;align-items:center}.row>*{flex:1}.hero{text-align:center;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center}.eyebrow{text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-size:13px}.big{font-size:clamp(44px,8vw,88px);font-weight:950;color:var(--gold);line-height:1.05;margin:12px 0}.question{font-size:clamp(21px,2.8vw,32px);line-height:1.35;font-weight:800;max-width:950px;margin:10px auto}.opts{display:grid;grid-template-columns:1fr 1fr;gap:11px;max-width:950px;width:100%;margin:18px auto}.opt{text-align:left}.letter{display:inline-flex;width:34px;height:34px;border-radius:9px;align-items:center;justify-content:center;background:#ffffff14;margin-right:8px}.controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:15px}.stat{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat>div{background:#ffffff09;border-radius:15px;padding:12px}.stat strong{display:block;font-size:27px}.small{font-size:13px;color:var(--muted)}.list{max-height:420px;overflow:auto;margin-top:10px}.item{padding:10px 2px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}.ok{color:var(--good);font-weight:900}.no{color:var(--bad);font-weight:900}.waiting{color:var(--muted)}.room{font-size:42px;font-weight:950;letter-spacing:7px;color:var(--gold);text-align:center}.qr{width:210px;height:210px;display:block;margin:12px auto;background:white;padding:7px;border-radius:12px}.setup{max-width:700px;margin:20px auto}.hint{background:#ffffff08;border:1px solid var(--line);padding:13px;border-radius:14px;color:var(--muted);line-height:1.5}
+.overlay{position:fixed;inset:0;background:#020712e8;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal{width:min(980px,100%);background:#0d2449;border:1px solid var(--line);border-radius:25px;padding:25px;text-align:center}.modal.show{display:block}.studentName{font-size:clamp(35px,6vw,65px);color:var(--gold);font-weight:950}.result{font-size:30px;font-weight:950;margin:14px}.success{color:var(--good)}.error{color:var(--bad)}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.opts{grid-template-columns:1fr}.top{flex-direction:column;align-items:flex-start}.hero{min-height:500px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand"><h1>🎯 AI GỌI TÊN – NGỮ VĂN 10</h1><p>Kiểm tra bài cũ • Kết nối tri thức • 2 màn hình + mã phòng</p></div><div class="badge">Không tính điểm • Chỉ ghi nhận ĐÚNG / SAI</div></header>
+
+<div id="setup" class="card setup">
+<h2>⚙️ Kết nối phòng học</h2>
+<p class="hint">Thiết lập một lần trên máy giáo viên. Sau đó URL Firebase được lưu trên trình duyệt để không phải nhập lại mỗi lần mở trò chơi. Thầy/cô chỉ cần cấu hình một lần trên máy giáo viên. Không cần cài ứng dụng.</p>
+<label>Firebase Database URL</label><input id="dbUrl" placeholder="https://TEN-DU-AN-default-rtdb.asia-southeast1.firebasedatabase.app">
+<div class="row" style="margin-top:10px"><button class="primary" id="saveConfig">Lưu cấu hình & tạo phòng</button><button id="clearConfig">Xóa cấu hình</button></div>
+<p class="small">Lưu ý: cần tạo Firebase Realtime Database và cho phép đọc/ghi tại /rooms trong thời gian sử dụng lớp học. Không dùng cấu hình này cho dữ liệu nhạy cảm.</p>
+</div>
+
+<div id="appMain" style="display:none">
+<div class="tabs"><button class="tab active" data-view="teacher">🖥️ Màn hình Giáo viên</button><button class="tab" data-view="student">📱 Màn hình Điện thoại học sinh</button></div>
+
+<section id="teacher" class="view active">
+<div class="grid">
+<div class="card hero">
+<div class="eyebrow" id="tLabel">PHÒNG SẴN SÀNG</div>
+<div class="room" id="roomCode">------</div>
+<img id="qr" class="qr" alt="QR vào phòng" style="display:none">
+<div class="big" id="tName">SẴN SÀNG</div>
+<div class="small" id="tStatus">Học sinh dùng điện thoại mở liên kết/QR, nhập tên và chờ được gọi.</div>
+
+<div class="controls"><button class="primary" id="callBtn">🎲 Gọi học sinh</button><button class="good" id="commitCorrectBtn" disabled>✅ Chốt ĐÚNG</button><button class="bad" id="commitWrongBtn" disabled>❌ Chốt SAI</button><button id="undoBtn" disabled>↩ Hoàn tác</button><button id="resetBtn">🔄 Chơi lại</button><button id="newRoomBtn">🏠 Phòng mới</button><button id="cfgBtn">⚙️ Cấu hình</button></div>
+</div>
+<aside class="card"><h2>📋 Lịch sử</h2><div class="stat"><div><span class="small">Câu</span><strong id="qCount">0/8</strong></div><div><span class="small">Đúng / Sai</span><strong><span id="yes">0</span> / <span id="no">0</span></strong></div></div><h3>👥 Đang trong phòng</h3><div class="list" id="onlineList"></div><h3>📝 Đã hỏi</h3><div class="list" id="history"></div></aside>
+</div>
+</section>
+
+<section id="student" class="view">
+<div class="card" style="max-width:800px;margin:auto;text-align:center">
+<div class="eyebrow">THAM GIA PHÒNG</div><div class="room" id="sRoom">------</div>
+<div id="joinBox"><input id="studentName" placeholder="Nhập đúng họ và tên của em"><button class="primary" id="joinBtn" style="margin-top:10px;width:100%">📱 Vào phòng</button></div>
+<div id="studentGame" style="display:none">
+<h2 id="sHello"></h2><div class="hint" id="sStatus">Đang chờ thầy/cô gọi...</div><div id="sQuestion"></div><div id="sResult"></div>
+</div></div>
+</section>
+</div>
+</div>
+
+<script>
+const DATA={"names": ["Nguyễn Hải Anh", "Nguyễn Trần Bảo Anh", "Trần Ngọc Anh", "Nguyễn Thị Ngọc Ánh", "Nguyễn Ngọc Bảo", "Nguyễn Thanh Bình", "Đặng Ngọc Minh Châu", "Nguyễn Thảo Chi", "Lê Thanh Chúc", "Lồng Mành Dũng", "Nguyễn Bảo Duy", "Đỗ Thị Thanh Hà", "Tạ Thanh Hà", "Đỗ Thị Diệu Hiền", "Đậu Xuân Khánh Hưng", "Nguyễn Khang", "Nguyễn Tuấn Kiệt", "Nguyễn Thư Kỳ", "Lê Phạm Hoàng Lân", "Hồ Thị Phương Linh", "Nguyễn Thị Mai Loan", "Nguyễn Thị Trà My", "Võ Thị Ly Na", "Lê Đỗ Kim Ngân", "Nguyễn Ngọc Bảo Nghi", "Lương Như Ngọc", "Phạm Nhật Nguyên", "Ngô Ngọc Khương Nhi", "Bùi Ngọc Bảo Như", "Lê Trường Phong", "Nguyễn Trọng Nam Phong", "Đỗ Thị Lan Phương", "Tạ Bích Phương", "Nguyễn Ngọc Bích Quyên", "Lê Sang", "Nguyễn Thành Tâm", "Nguyễn Nhật Tân", "Võ Khương Thịnh", "Đặng Ngọc Anh Thư", "Hồ Thị Bảo Thy", "Phạm Như Bảo Trâm", "Nguyễn Thu Trang", "Trần Bảo Trang", "Ngô Thuỷ Trúc", "Võ Phan Thanh Trúc", "Trần Thanh Tùng", "Lê Bảo Tuyên"], "questions": [{"id": 1, "level": "Nhận biết", "q": "Thơ là gì? Thơ trữ tình có đặc điểm gì nổi bật?", "opts": ["Là thể loại chỉ kể lại sự việc theo trình tự thời gian.", "Là hình thức nghệ thuật dùng ngôn từ cô đọng, giàu hình ảnh và thể hiện cảm xúc, suy nghĩ.", "Là văn bản chủ yếu cung cấp thông tin khoa học.", "Là văn bản dùng để tranh luận, thuyết phục."], "ans": 1}, {"id": 2, "level": "Nhận biết", "q": "Nhân vật trữ tình là ai?", "opts": ["Người trực tiếp kể lại toàn bộ câu chuyện trong thơ.", "Nhân vật xuất hiện và hành động như trong truyện.", "Người trực tiếp bộc lộ rung động, cảm xúc và tình cảm trong bài thơ.", "Tác giả ngoài đời của bài thơ."], "ans": 2}, {"id": 3, "level": "Thông hiểu", "q": "Hình ảnh thơ là gì?", "opts": ["Những sự vật, hiện tượng, trạng thái đời sống được tạo dựng bằng ngôn từ một cách cụ thể, sống động.", "Những từ ngữ có nghĩa giống nhau trong bài thơ.", "Những câu thơ được viết theo cùng một số tiếng.", "Những từ ngữ chỉ cảm xúc của tác giả."], "ans": 0}, {"id": 4, "level": "Nhận biết", "q": "Vần và nhịp có vai trò gì trong thơ?", "opts": ["Chỉ giúp bài thơ có hình thức đẹp hơn.", "Góp phần tạo âm hưởng, nhạc điệu và làm nổi bật cảm xúc của bài thơ.", "Giúp xác định nhân vật trữ tình.", "Giúp xác định tác giả của bài thơ."], "ans": 1}, {"id": 5, "level": "Thông hiểu", "q": "Thể thơ được xác định dựa trên những yếu tố nào?", "opts": ["Số tiếng, cách gieo vần, cách ngắt nhịp và một số đặc điểm hình thức khác.", "Tên tác giả và hoàn cảnh sáng tác.", "Nội dung và chủ đề của bài thơ.", "Số lượng nhân vật trong bài thơ."], "ans": 0}, {"id": 6, "level": "Vận dụng", "q": "Cho câu thơ: “Sóng gợn tràng giang buồn điệp điệp”. Theo em, việc lựa chọn từ ngữ và nhịp điệu trong câu thơ trên có tác dụng chủ yếu gì?", "opts": ["Tạo cảm giác mạnh mẽ, dồn dập.", "Gợi không gian rộng lớn, nỗi buồn kéo dài, lan tỏa.", "Thể hiện không khí vui tươi, náo nhiệt.", "Miêu tả một sự việc diễn ra nhanh chóng."], "ans": 1}, {"id": 7, "level": "Lỗi dùng từ", "q": "Khi phân tích câu thơ “Sóng gợn tràng giang buồn điệp điệp”, một học sinh viết: “Tác giả đã sử dụng từ láy ‘điệp điệp’ để diễn tả một nỗi buồn rất sôi động và náo nhiệt.” Từ ngữ nào được dùng không phù hợp trong câu trên?", "opts": ["“sử dụng”", "“từ láy”", "“sôi động và náo nhiệt”", "“diễn tả”"], "ans": 2}, {"id": 8, "level": "Lỗi trật tự từ", "q": "“Tác giả đã miêu tả rất đẹp cảnh vật thiên nhiên.” Cách sắp xếp từ nào dưới đây hợp lí hơn?", "opts": ["Tác giả đã miêu tả rất đẹp cảnh vật thiên nhiên.", "Tác giả đã miêu tả cảnh vật thiên nhiên rất đẹp.", "Tác giả rất đẹp đã miêu tả cảnh vật thiên nhiên.", "Tác giả đã cảnh vật thiên nhiên miêu tả rất đẹp."], "ans": 1}]};
+const CFGKEY="nguvan10_firebase_cfg_v2";
+const $=id=>document.getElementById(id);
+let cfg=JSON.parse(localStorage.getItem(CFGKEY)||"null");
+let room=null, role="teacher", poller=null, localState=null, timerHandle=null, studentSession=null;
+
+function rand(max){const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%max}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=rand(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function cleanUrl(u){return (u||"").trim().replace(/\/+$/,"")}
+function roomId(){let chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",s="";for(let i=0;i<6;i++)s+=chars[rand(chars.length)];return s}
+function dbPath(path){return cleanUrl(cfg.dbUrl)+"/rooms/"+encodeURIComponent(room)+"/"+path+".json"}
+async function get(path=""){let r=await fetch(dbPath(path));if(!r.ok)throw Error("Firebase GET "+r.status);return r.json()}
+async function put(path,data){let r=await fetch(dbPath(path),{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});if(!r.ok)throw Error("Firebase PUT "+r.status);return r.json()}
+async function patch(path,data){let r=await fetch(dbPath(path),{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});if(!r.ok)throw Error("Firebase PATCH "+r.status);return r.json()}
+async function del(path){let r=await fetch(dbPath(path),{method:"DELETE"});if(!r.ok)throw Error("Firebase DELETE "+r.status)}
+function showApp(){ $("setup").style.display="none";$("appMain").style.display="block"; }
+function qrUrl(){let base=location.href.split("#")[0];return base+"#student/"+room}
+function renderQr(){let u=encodeURIComponent(qrUrl());$("qr").src="https://api.qrserver.com/v1/create-qr-code/?size=210x210&data="+u;$("qr").style.display="block"}
+function setRoomHash(){history.replaceState(null,"","#student/"+room)}
+function parseHash(){let m=location.hash.match(/^#student\/([A-Z0-9]+)$/);return m?m[1]:null}
+function switchView(v){document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));$(v).classList.add("active");document.querySelector(`[data-view="${v}"]`).classList.add("active")}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>switchView(b.dataset.view));
+
+async function createRoom(){
+ room=roomId();
+ const qState={qIndex:0,usedNames:[],history:[],active:null,version:1};
+ await put("",{code:room,createdAt:Date.now(),teacher:true,players:{},state:qState});
+ $("roomCode").textContent=room;$("sRoom").textContent=room;renderQr();renderTeacherState(qState);
+}
+async function refreshRoom(){
+ try{localState=await get("state");const players=await get("players")||{};renderTeacherState(localState);renderPlayers(players);if(role==="student")renderStudent(localState)}catch(e){console.error(e)}
+}
+function renderPlayers(players){
+ let arr=Object.values(players||{}).sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+ $("onlineList").innerHTML=arr.length?arr.map(p=>`<div class="item"><span>${esc(p.name)}</span><span class="small">${p.lastSeen>Date.now()-15000?"🟢":"⚪"}</span></div>`).join(""):"<div class='small'>Chưa có học sinh tham gia.</div>";
+}
+function renderTeacherState(s){
+ if(!s)return;
+ $("qCount").textContent=(s.history||[]).length+"/"+DATA.questions.length;
+ $("yes").textContent=(s.history||[]).filter(x=>x.correct).length;
+ $("no").textContent=(s.history||[]).filter(x=>x.correct===false).length;
+ $("undoBtn").disabled=!(s.history||[]).length;
+ let active=s.active;
+ $("callBtn").disabled=!!active || (s.qIndex>=DATA.questions.length);$("commitCorrectBtn").disabled=!active || !active.answered;$("commitWrongBtn").disabled=!active || !active.answered;
+ if(s.qIndex>=DATA.questions.length){$("tLabel").textContent="🎉 ĐÃ HOÀN THÀNH";$("tName").textContent="ĐÃ HỎI HẾT";$("tStatus").textContent="Thầy/cô có thể tạo phòng mới để chơi lại."}
+ else if(active){$("tLabel").textContent=`CÂU ${active.qId} • ${active.level}`;$("tName").textContent=active.name;$("tStatus").textContent=active.answered?"Học sinh đã gửi đáp án.":"Học sinh đang trả lời trên điện thoại."}
+ else{$("tLabel").textContent="SẴN SÀNG";$("tName").textContent="GỌI HỌC SINH";$("tStatus").textContent="Nhấn “Gọi học sinh” để chọn ngẫu nhiên."}
+ $("history").innerHTML=(s.history||[]).length?(s.history||[]).map((x,i)=>`<div class="item"><span>${i+1}. ${esc(x.name)}<br><span class="small">Câu ${x.qId}</span></span><span class="${x.correct?"ok":"no"}">${x.correct?"ĐÚNG":"SAI"}</span></div>`).join(""):"<div class='small'>Chưa có lượt nào.</div>";
+ 
+}
+function renderStudent(s){
+ if(!studentSession)return;
+ $("sRoom").textContent=room;$("sHello").textContent="Xin chào, "+studentSession.name+"!";
+ if(!s||!s.active){$("sStatus").textContent="⏳ Đang chờ thầy/cô gọi...";$("sQuestion").innerHTML="";$("sResult").innerHTML="";return}
+ if(s.active.name!==studentSession.name){$("sStatus").textContent="Thầy/cô đang gọi một bạn khác. Em chờ nhé!";$("sQuestion").innerHTML="";$("sResult").innerHTML="";return}
+ if(s.active.answered){$("sStatus").textContent="Đã gửi đáp án. Chờ thầy/cô chốt kết quả.";return}
+ const q=DATA.questions[s.qIndex];
+ $("sStatus").textContent="Em hãy chọn A, B, C hoặc D. Khi trả lời xong, em hãy gửi đáp án.";
+ $("sQuestion").innerHTML=`<div class="question">${esc(q.q)}</div><div class="opts">${q.opts.map((o,i)=>`<button class="opt" onclick="submitAnswer(${i})"><span class="letter">${"ABCD"[i]}</span>${esc(o)}</button>`).join("")}</div>`;
+}
+async function callStudent(){
+ let s=await get("state");if(s.active||s.qIndex>=DATA.questions.length)return;
+ let players=await get("players")||{};
+ let used=new Set(s.usedNames||[]);
+ let candidates=Object.values(players).filter(p=>!used.has(p.name));
+ // Fallback: students may not have joined; still select from class roster.
+ let name=candidates.length?candidates[rand(candidates.length)].name:DATA.names.filter(n=>!used.has(n))[rand(DATA.names.filter(n=>!used.has(n)).length)];
+ if(!name){alert("Đã gọi hết học sinh.");return}
+ let q=DATA.questions[s.qIndex];
+ s.active={name,qId:q.id,level:q.level,answered:false,answer:null,answerAt:0};
+ s.version=(s.version||0)+1;
+ await put("state",s);beep();refreshRoom();
+}
+async function submitAnswer(i){
+ if(!studentSession)return;
+ let s=await get("state");if(!s.active||s.active.name!==studentSession.name||s.active.answered)return;
+ 
+ s.active.answered=true;s.active.answer=i;s.active.answerAt=Date.now();s.version=(s.version||0)+1;
+ await put("state",s);
+ $("sResult").innerHTML="<div class='result'>📨 Đã gửi đáp án!</div>";renderStudent(s);
+}
+async function commitResult(correct){
+ let s=await get("state");if(!s.active||!s.active.answered)return;
+ const q=DATA.questions[s.qIndex],a=s.active;
+ s.history.push({name:a.name,qId:q.id,correct:!!correct,answer:a.answer});
+ s.usedNames.push(a.name);s.qIndex++;s.active=null;s.version=(s.version||0)+1;
+ await put("state",s);refreshRoom();
+}
+async function undo(){
+ let s=await get("state");if(s.active||!s.history.length)return;
+ let last=s.history.pop();s.usedNames=(s.usedNames||[]).filter(n=>n!==last.name);s.qIndex=Math.max(0,s.qIndex-1);s.version=(s.version||0)+1;await put("state",s);refreshRoom();
+}
+async function resetRoom(){
+ if(!confirm("Xóa toàn bộ lượt chơi của phòng này?"))return;
+ let s={qIndex:0,usedNames:[],history:[],active:null,version:(localState?.version||0)+1};await put("state",s);refreshRoom();
+}
+async function newRoom(){await createRoom()}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function beep(){try{let c=new (AudioContext||webkitAudioContext),o=c.createOscillator(),g=c.createGain();o.frequency.value=760;g.gain.value=.05;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.12)}catch(e){}}
+
+$("saveConfig").onclick=async()=>{let u=cleanUrl($("dbUrl").value);if(!u){alert("Hãy nhập Firebase Database URL.");return}cfg={dbUrl:u};localStorage.setItem(CFGKEY,JSON.stringify(cfg));try{showApp();role="teacher";await createRoom();startPoll()}catch(e){alert("Không kết nối được Firebase. Kiểm tra Database URL và Rules.");console.error(e)}};
+$("clearConfig").onclick=()=>{localStorage.removeItem(CFGKEY);location.reload()};
+$("callBtn").onclick=async()=>{try{await callStudent()}catch(e){alert("Không thể gọi học sinh: "+e.message)}};
+$("commitCorrectBtn").onclick=()=>commitResult(true);$("commitWrongBtn").onclick=()=>commitResult(false);
+$("undoBtn").onclick=undo;$("resetBtn").onclick=resetRoom;$("newRoomBtn").onclick=newRoom;$("cfgBtn").onclick=()=>{$("setup").style.display="block";$("appMain").style.display="none";};
+$("joinBtn").onclick=joinStudent;
+
+async function joinStudent(){
+ let n=$("studentName").value.trim();
+ const valid=DATA.names.find(x=>x.toLowerCase()===n.toLowerCase());
+ if(!valid){alert("Tên chưa khớp danh sách lớp. Em hãy nhập đúng họ và tên.");return}
+ studentSession={name:valid,id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+rand(99999))};
+ await put("players/"+encodeURIComponent(studentSession.id),{name:valid,lastSeen:Date.now()});
+ $("joinBox").style.display="none";$("studentGame").style.display="block";renderStudent(localState);
+}
+async function studentHeartbeat(){
+ if(studentSession)try{await patch("players/"+encodeURIComponent(studentSession.id),{lastSeen:Date.now(),name:studentSession.name})}catch(e){}
+}
+function startPoll(){clearInterval(poller);refreshRoom();poller=setInterval(async()=>{await refreshRoom();await studentHeartbeat()},1000);}
+
+(function init(){
+ let hashRoom=parseHash();
+ if(cfg){$("dbUrl").value=cfg.dbUrl;showApp();role=hashRoom?"student":"teacher";if(hashRoom){room=hashRoom;$("sRoom").textContent=room;switchView("student")}else{createRoom().then(startPoll)}}
+ else if(hashRoom){alert("Máy giáo viên chưa tạo phòng. Hãy mở ứng dụng trên máy giáo viên trước.");}
+})();
+</script>
+</body>
+</html>
