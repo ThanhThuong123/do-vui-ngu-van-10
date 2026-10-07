@@ -115,6 +115,38 @@ async function createRoom(){
 async function refreshRoom(){
  try{localState=await get("state");const players=await get("players")||{};renderTeacherState(localState);renderPlayers(players);if(role==="student")renderStudent(localState)}catch(e){console.error(e)}
 }
+async function callStudent(){
+  let s=await get("state");
+  if(s.active) throw Error("Đang có học sinh đang trả lời.");
+  if((s.qIndex||0)>=DATA.questions.length) throw Error("Đã hỏi hết học sinh.");
+
+  const players=await get("players")||{};
+  const used=new Set(s.usedNames||[]);
+  const now=Date.now();
+  const candidates=Object.values(players).filter(p=>{
+    if(!p || !p.name) return false;
+    if(used.has(p.name)) return false;
+    return (now-(p.lastSeen||0)) <= 20000;
+  });
+  if(!candidates.length) throw Error("Chưa có học sinh đang online trong phòng.");
+
+  const picked=candidates[rand(candidates.length)];
+  const q=DATA.questions[s.qIndex];
+  s.active={
+    name:picked.name,
+    qId:q.id,
+    level:q.level||"NHẬN BIẾT",
+    answered:false,
+    answer:null,
+    attempts:0,
+    lastResult:null,
+    calledAt:Date.now()
+  };
+  s.version=(s.version||0)+1;
+  await put("state",s);
+  await refreshRoom();
+}
+
 function renderPlayers(players){
  let arr=Object.values(players||{}).sort((a,b)=>(a.name||"").localeCompare(b.name||""));
  $("onlineList").innerHTML=arr.length?arr.map(p=>`<div class="item"><span>${esc(p.name)}</span><span class="small">${p.lastSeen>Date.now()-15000?"🟢":"⚪"}</span></div>`).join(""):"<div class='small'>Chưa có học sinh tham gia.</div>";
